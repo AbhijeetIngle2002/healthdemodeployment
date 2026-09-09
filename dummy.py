@@ -335,6 +335,19 @@ lambda_client.invoke(
 )
 
 # ============================================================
+# 22. AWS SQS
+# ============================================================
+sqs = boto3.client(
+    "sqs",
+    region_name="us-east-1"
+)
+
+sqs.send_message(
+    QueueUrl="https://sqs.us-east-1.amazonaws.com/123456789012/dummy-queue",
+    MessageBody="Cost Gate test message"
+)
+
+# ============================================================
 # APPLICATION LOGIC
 # ============================================================
 
