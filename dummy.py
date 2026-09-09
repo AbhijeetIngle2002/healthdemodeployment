@@ -2,90 +2,78 @@ import os
 
 # ============================================================
 # DEPLOYMENT INTELLIGENCE PLATFORM
-# Cost Gate - Large Multi-Service Test
+# COST GATE - 20 SERVICE TEST
 # ============================================================
 
 # ============================================================
-# AI / LLM SERVICES
+# 1. AI / LLM SERVICES
 # ============================================================
 
 import openai
-
 from openai import OpenAI
 from langchain_openai import ChatOpenAI
 
-# Anthropic
 from anthropic import Anthropic
 
-# Google AI
-import google.generativeai as genai
-
-# Cohere
-import cohere
-
-# Mistral
-from mistralai import Mistral
-
 # ============================================================
-# VECTOR DATABASES
+# 2. VECTOR DATABASES
 # ============================================================
 
 from pinecone import Pinecone
 from qdrant_client import QdrantClient
 from weaviate import WeaviateClient
-from pymilvus import MilvusClient
-import chromadb
 
 # ============================================================
-# CLOUD PROVIDERS
+# 3. CLOUD SERVICES
 # ============================================================
 
 import boto3
 
-# Google Cloud
 from google.cloud import storage
-
-# Azure
 from azure.storage.blob import BlobServiceClient
 
 # ============================================================
-# DATABASE / CACHE SERVICES
+# 4. DATABASE / CACHE
 # ============================================================
 
 import redis
 import pymongo
-import psycopg2
 
-# Elasticsearch
 from elasticsearch import Elasticsearch
 
 # ============================================================
-# PAYMENTS
+# 5. PAYMENTS
 # ============================================================
 
 import stripe
 
 # ============================================================
-# COMMUNICATION SERVICES
+# 6. COMMUNICATION
 # ============================================================
 
 from twilio.rest import Client as TwilioClient
 from sendgrid import SendGridAPIClient
 
 # ============================================================
-# OBSERVABILITY / MONITORING
+# 7. MESSAGING
+# ============================================================
+
+from kafka import KafkaProducer
+import pika
+
+# ============================================================
+# 8. OBSERVABILITY
 # ============================================================
 
 import sentry_sdk
-
-# Datadog
-from datadog import initialize, api
+from datadog import initialize
 
 # ============================================================
-# SEARCH / DATA SERVICES
+# 9. ANALYTICS
 # ============================================================
 
-from algoliasearch.search.client import SearchClient
+from mixpanel import Mixpanel
+
 
 # ============================================================
 # DUMMY CREDENTIALS
@@ -93,16 +81,15 @@ from algoliasearch.search.client import SearchClient
 
 os.environ["OPENAI_API_KEY"] = "sk-dummy-openai-key"
 os.environ["ANTHROPIC_API_KEY"] = "dummy-anthropic-key"
-os.environ["COHERE_API_KEY"] = "dummy-cohere-key"
-os.environ["MISTRAL_API_KEY"] = "dummy-mistral-key"
 
 os.environ["PINECONE_API_KEY"] = "dummy-pinecone-key"
 os.environ["QDRANT_API_KEY"] = "dummy-qdrant-key"
 
-os.environ["AWS_ACCESS_KEY_ID"] = "dummy-aws-access-key"
-os.environ["AWS_SECRET_ACCESS_KEY"] = "dummy-aws-secret-key"
+os.environ["AWS_ACCESS_KEY_ID"] = "dummy-aws-key"
+os.environ["AWS_SECRET_ACCESS_KEY"] = "dummy-aws-secret"
 
 os.environ["STRIPE_API_KEY"] = "sk_test_dummy"
+
 
 # ============================================================
 # 1. OPENAI
@@ -115,6 +102,7 @@ llm = ChatOpenAI(
     temperature=0
 )
 
+
 # ============================================================
 # 2. ANTHROPIC
 # ============================================================
@@ -123,32 +111,9 @@ anthropic_client = Anthropic(
     api_key=os.getenv("ANTHROPIC_API_KEY")
 )
 
-# ============================================================
-# 3. GOOGLE AI
-# ============================================================
-
-genai.configure(
-    api_key="dummy-google-ai-key"
-)
 
 # ============================================================
-# 4. COHERE
-# ============================================================
-
-cohere_client = cohere.Client(
-    os.getenv("COHERE_API_KEY")
-)
-
-# ============================================================
-# 5. MISTRAL
-# ============================================================
-
-mistral_client = Mistral(
-    api_key=os.getenv("MISTRAL_API_KEY")
-)
-
-# ============================================================
-# 6. PINECONE
+# 3. PINECONE
 # ============================================================
 
 pinecone_client = Pinecone(
@@ -159,8 +124,9 @@ pinecone_index = pinecone_client.Index(
     "deployment-demo-index"
 )
 
+
 # ============================================================
-# 7. QDRANT
+# 4. QDRANT
 # ============================================================
 
 qdrant_client = QdrantClient(
@@ -168,46 +134,31 @@ qdrant_client = QdrantClient(
     api_key=os.getenv("QDRANT_API_KEY")
 )
 
+
 # ============================================================
-# 8. WEAVIATE
+# 5. WEAVIATE
 # ============================================================
 
 weaviate_client = WeaviateClient(
     connection_params="dummy-connection"
 )
 
-# ============================================================
-# 9. MILVUS
-# ============================================================
-
-milvus_client = MilvusClient(
-    uri="https://dummy-milvus.example.com"
-)
 
 # ============================================================
-# 10. CHROMA
-# ============================================================
-
-chroma_client = chromadb.Client()
-
-chroma_collection = chroma_client.get_or_create_collection(
-    name="deployment-demo"
-)
-
-# ============================================================
-# 11. AWS S3
+# 6. AWS S3
 # ============================================================
 
 s3_client = boto3.client("s3")
 
-s3_resource = boto3.resource("s3")
-
-bucket = s3_resource.Bucket(
-    "deployment-demo-bucket"
+s3_client.put_object(
+    Bucket="deployment-demo-bucket",
+    Key="deployment/result.txt",
+    Body="deployment result"
 )
 
+
 # ============================================================
-# 12. GOOGLE CLOUD STORAGE
+# 7. GOOGLE CLOUD STORAGE
 # ============================================================
 
 gcs_client = storage.Client(
@@ -218,8 +169,9 @@ gcs_bucket = gcs_client.bucket(
     "deployment-demo-bucket"
 )
 
+
 # ============================================================
-# 13. AZURE BLOB STORAGE
+# 8. AZURE BLOB STORAGE
 # ============================================================
 
 azure_blob_client = BlobServiceClient(
@@ -227,8 +179,9 @@ azure_blob_client = BlobServiceClient(
     credential="dummy-credential"
 )
 
+
 # ============================================================
-# 14. REDIS
+# 9. REDIS
 # ============================================================
 
 redis_client = redis.Redis(
@@ -236,48 +189,45 @@ redis_client = redis.Redis(
     port=6379
 )
 
+redis_client.set(
+    "deployment:last_result",
+    "deployment completed"
+)
+
+
 # ============================================================
-# 15. MONGODB
+# 10. MONGODB
 # ============================================================
 
 mongo_client = pymongo.MongoClient(
     "mongodb://localhost:27017"
 )
 
-database = mongo_client[
-    "deployment_demo"
+mongo_database = mongo_client[
+    "deployment-demo"
 ]
 
-# ============================================================
-# 16. POSTGRESQL
-# ============================================================
-
-postgres_connection = psycopg2.connect(
-    host="localhost",
-    port=5432,
-    database="deployment_demo",
-    user="dummy_user",
-    password="dummy_password"
-)
 
 # ============================================================
-# 17. ELASTICSEARCH
+# 11. ELASTICSEARCH
 # ============================================================
 
 elastic_client = Elasticsearch(
     "https://dummy-elasticsearch.example.com"
 )
 
+
 # ============================================================
-# 18. STRIPE
+# 12. STRIPE
 # ============================================================
 
 stripe.api_key = "sk_test_dummy"
 
 payment = stripe.PaymentIntent
 
+
 # ============================================================
-# 19. TWILIO
+# 13. TWILIO
 # ============================================================
 
 twilio_client = TwilioClient(
@@ -285,24 +235,56 @@ twilio_client = TwilioClient(
     "dummy-auth-token"
 )
 
+
 # ============================================================
-# 20. SENDGRID
+# 14. SENDGRID
 # ============================================================
 
 sendgrid_client = SendGridAPIClient(
     "dummy-sendgrid-key"
 )
 
+
 # ============================================================
-# 21. SENTRY
+# 15. KAFKA
+# ============================================================
+
+kafka_producer = KafkaProducer(
+    bootstrap_servers=[
+        "localhost:9092"
+    ]
+)
+
+kafka_producer.send(
+    "deployment-events",
+    b"deployment created"
+)
+
+
+# ============================================================
+# 16. RABBITMQ
+# ============================================================
+
+rabbit_connection = pika.BlockingConnection(
+    pika.ConnectionParameters(
+        "localhost"
+    )
+)
+
+rabbit_channel = rabbit_connection.channel()
+
+
+# ============================================================
+# 17. SENTRY
 # ============================================================
 
 sentry_sdk.init(
     dsn="https://dummy@sentry.example.com/123"
 )
 
+
 # ============================================================
-# 22. DATADOG
+# 18. DATADOG
 # ============================================================
 
 initialize(
@@ -310,14 +292,33 @@ initialize(
     app_key="dummy-datadog-app-key"
 )
 
+
 # ============================================================
-# 23. ALGOLIA
+# 19. MIXPANEL
 # ============================================================
 
-algolia_client = SearchClient.create(
-    "dummy-algolia-app-id",
-    "dummy-algolia-api-key"
+mixpanel_client = Mixpanel(
+    "dummy-mixpanel-token"
 )
+
+
+# ============================================================
+# 20. AWS DYNAMODB
+# ============================================================
+
+dynamodb = boto3.resource("dynamodb")
+
+dynamodb_table = dynamodb.Table(
+    "deployment-events"
+)
+
+dynamodb_table.put_item(
+    Item={
+        "id": "dummy-deployment",
+        "status": "created"
+    }
+)
+
 
 # ============================================================
 # APPLICATION LOGIC
@@ -325,34 +326,34 @@ algolia_client = SearchClient.create(
 
 def process_deployment():
 
-    # LLM request
+    # OpenAI
     response = llm.invoke(
-        "Analyze this deployment for infrastructure and cost impact."
+        "Analyze this deployment for cost impact."
     )
 
     result = response.content
 
-    # Vector search
+    # Pinecone
     pinecone_index.query(
         vector=[0.1, 0.2, 0.3],
         top_k=5
     )
 
-    # Qdrant search
+    # Qdrant
     qdrant_client.search(
         collection_name="deployment-demo",
         query_vector=[0.1, 0.2, 0.3],
         limit=5
     )
 
-    # S3 upload
+    # S3
     s3_client.put_object(
         Bucket="deployment-demo-bucket",
         Key="deployment/result.txt",
         Body=result
     )
 
-    # Redis cache
+    # Redis
     redis_client.set(
         "deployment:last_result",
         result
@@ -371,11 +372,12 @@ def process_deployment():
 
 if __name__ == "__main__":
 
-    print("Starting deployment analysis...")
+    print("=" * 60)
+    print("Deployment Intelligence Platform")
+    print("Cost Gate - 20 Service Test")
+    print("=" * 60)
 
     result = process_deployment()
 
-    print("Deployment analysis completed.")
+    print("\nDeployment analysis completed.")
     print(result)
-
-
