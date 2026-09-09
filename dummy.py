@@ -318,7 +318,21 @@ dynamodb_table.put_item(
         "status": "created"
     }
 )
+# ============================================================
+# 21. AWS Lambda
+# ============================================================
+import boto3
 
+lambda_client = boto3.client(
+    "lambda",
+    region_name="us-east-1"
+)
+
+lambda_client.invoke(
+    FunctionName="dummy-cost-test-function",
+    InvocationType="RequestResponse",
+    Payload=b'{"test": true}'
+)
 
 # ============================================================
 # APPLICATION LOGIC
