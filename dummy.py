@@ -12,6 +12,9 @@ from langchain_core.messages import HumanMessage
 os.environ["OPENAI_API_KEY"] = "sk-dummy-openai-key-123456789"
 
 
+
+
+
 # ------------------------------------------------------------
 # 1. OpenAI / LangChain
 # ------------------------------------------------------------
